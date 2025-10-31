@@ -5,9 +5,9 @@
 set -e
 
 # Configurações
-USER_DATA_DIR="$HOME/freqtrade/user_data"
+USER_DATA_DIR="/home/marcos/projects/cryptotrader/user_data"
 PROJECT_DIR="/home/marcos/projects/cryptotrader"
-BACKUP_DIR="$HOME/freqtrade/backups"
+BACKUP_DIR="/home/marcos/projects/cryptotrader/backups"
 LOG_FILE="$USER_DATA_DIR/logs/freqtrade.log"
 
 # Cores

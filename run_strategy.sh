@@ -5,8 +5,8 @@
 set -e
 
 # Configurações
-FREQTRADE_DIR="$HOME/freqtrade/freqtrade"
-USER_DATA_DIR="$HOME/freqtrade/user_data"
+FREQTRADE_DIR="/home/marcos/projects/cryptotrader/freqtrade"
+USER_DATA_DIR="/home/marcos/projects/cryptotrader/user_data"
 PROJECT_DIR="/home/marcos/projects/cryptotrader"
 VENV_PATH="$FREQTRADE_DIR/.venv"
 

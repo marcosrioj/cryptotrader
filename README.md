@@ -26,6 +26,9 @@ cd cryptotrader
 
 # Seguir os passos do guia de instalação do FreqTrade
 # As estratégias e configurações já estão organizadas em user_data/
+
+# Configuração automática do ambiente
+./setup_environment.sh
 ```
 
 ## 📊 Estratégias Disponíveis
@@ -139,7 +142,7 @@ cryptotrader/
 
 ```bash
 # Ativar ambiente virtual
-source ~/freqtrade/freqtrade/.venv/bin/activate
+source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate
 
 # RSI + Bollinger Bands (Dry Run)
 freqtrade trade \
@@ -377,15 +380,12 @@ freqtrade trade \
 
 ```bash
 # 1. Ativar ambiente virtual
-source ~/freqtrade/freqtrade/.venv/bin/activate
+source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate
 
 # 2. Verificar instalação
 freqtrade --version
 
-# 4. Copiar arquivos (não necessário - já organizados em user_data/)
-# As estratégias e configurações já estão prontas em user_data/
-
-# 4. Configurar variáveis de ambiente
+# 3. Configurar variáveis de ambiente (já prontas em .env)
 source .env
 ```
 

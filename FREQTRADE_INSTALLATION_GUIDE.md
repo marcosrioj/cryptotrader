@@ -34,8 +34,8 @@ Create a dedicated directory for your FreqTrade installation:
 
 ```bash
 # Create directory for FreqTrade
-mkdir -p ~/freqtrade
-cd ~/freqtrade
+mkdir -p /home/marcos/projects/cryptotrader
+cd /home/marcos/projects/cryptotrader
 ```
 
 ## Step 3: Clone FreqTrade Repository
@@ -115,8 +115,8 @@ Create a directory for your FreqTrade configurations:
 
 ```bash
 # Create config directory
-mkdir -p ~/freqtrade/user_data/config
-cd ~/freqtrade/user_data
+mkdir -p /home/marcos/projects/cryptotrader/user_data/config
+cd /home/marcos/projects/cryptotrader/user_data
 ```
 
 ## Step 9: Generate Sample Configuration
@@ -207,7 +207,7 @@ Then modify your config to use environment variables:
 
 ```bash
 # Always activate virtual environment first
-source ~/freqtrade/freqtrade/.venv/bin/activate
+source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate
 
 # Start trading (dry run)
 freqtrade trade --config config.json --strategy YourStrategy --dry-run
@@ -229,7 +229,7 @@ freqtrade webserver --config config.json
 
 ```bash
 # Update FreqTrade
-cd ~/freqtrade/freqtrade
+cd /home/marcos/projects/cryptotrader/freqtrade
 git pull
 pip install -e . --upgrade
 
@@ -250,7 +250,7 @@ freqtrade clean-dry-run-db --config config.json
 
 Check logs for debugging:
 ```bash
-tail -f ~/freqtrade/user_data/logs/freqtrade.log
+tail -f /home/marcos/projects/cryptotrader/user_data/logs/freqtrade.log
 ```
 
 ## Security Best Practices
@@ -277,15 +277,15 @@ Here's a one-liner to get started quickly:
 ```bash
 #!/bin/bash
 # Quick FreqTrade installation script
-mkdir -p ~/freqtrade && cd ~/freqtrade
+mkdir -p /home/marcos/projects/cryptotrader && cd /home/marcos/projects/cryptotrader
 git clone https://github.com/freqtrade/freqtrade.git
 cd freqtrade
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -e .
-freqtrade create-userdir --userdir ~/freqtrade/user_data
-echo "FreqTrade installed! Activate with: source ~/freqtrade/freqtrade/.venv/bin/activate"
+freqtrade create-userdir --userdir /home/marcos/projects/cryptotrader/user_data
+echo "FreqTrade installed! Activate with: source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate"
 ```
 
 ## Próximos Passos

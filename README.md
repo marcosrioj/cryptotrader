@@ -189,23 +189,70 @@ freqtrade webserver --config user_data/config/ema_scalping_config.json
 # Password: SuperSecretPassword
 ```
 
-### 4. Using the Run Script
+### 4. Using the Enhanced Run Script
+
+The `run_strategy.sh` script now includes comprehensive backtesting capabilities:
 
 ```bash
-# EMA scalping in simulation mode
-./run_strategy.sh ema dry
+# Basic usage
+./run_strategy.sh help                    # Show comprehensive help
+./run_strategy.sh status                  # Check system status
 
-# Bollinger squeeze in simulation mode
-./run_strategy.sh bb dry
+# Paper trading
+./run_strategy.sh ema dry                 # EMA scalping simulation
+./run_strategy.sh bb dry                  # Bollinger squeeze simulation
 
-# Live trading (use with caution)
+# Backtesting with various options
+./run_strategy.sh ema backtest            # Quick backtest (7 days)
+./run_strategy.sh bb backtest -30d        # Last 30 days
+./run_strategy.sh ema backtest 20241001-20241030      # Specific range
+./run_strategy.sh bb backtest -14d week   # 2 weeks with weekly breakdown
+
+# Live trading (use with extreme caution)
 ./run_strategy.sh ema live
 ./run_strategy.sh bb live
 ```
 
-## 📈 Backtesting
+#### Backtesting Features:
+- **Automatic data download** for specified timeframes
+- **Multiple breakdown options**: daily, weekly, monthly analysis
+- **Comprehensive reporting**: JSON exports, HTML reports, visual plots
+- **Performance metrics**: win rate, profit/loss, drawdown analysis
+- **Trade-by-trade analysis** with detailed statistics
+- **Risk assessment** and position sizing validation## 📈 Backtesting
 
-### Data Download
+The enhanced `run_strategy.sh` script provides comprehensive backtesting with automatic data management and detailed analysis.
+
+### Quick Backtesting
+
+```bash
+# Quick backtests (last 7 days)
+./run_strategy.sh ema backtest
+./run_strategy.sh bb backtest
+
+# Extended timeframes
+./run_strategy.sh ema backtest -30d       # Last 30 days
+./run_strategy.sh bb backtest -90d        # Last 90 days
+```
+
+### Advanced Backtesting
+
+```bash
+# Specific date ranges
+./run_strategy.sh ema backtest 20241001-20241030
+
+# From date to present
+./run_strategy.sh bb backtest 20240801-
+
+# With performance breakdowns
+./run_strategy.sh ema backtest -30d week      # Weekly breakdown
+./run_strategy.sh bb backtest -90d month     # Monthly breakdown
+./run_strategy.sh ema backtest 20241001-20241030 day  # Daily breakdown
+```
+
+### Manual FreqTrade Backtesting
+
+For advanced users who prefer direct FreqTrade commands:
 
 ```bash
 # Download data for EMA Scalping (1m, 30 days)
@@ -221,7 +268,7 @@ freqtrade download-data \
     --days 60
 ```
 
-### Run Backtests
+### Run Manual Backtests
 
 ```bash
 # Backtest EMA Scalping Strategy
@@ -246,6 +293,15 @@ freqtrade backtesting \
     --timerange 20231001-20241030 \
     --breakdown month week
 ```
+
+### Backtest Output Files
+
+The enhanced script generates multiple output formats:
+
+- **JSON Results**: `user_data/backtest_results/[strategy]_backtest_[timestamp].json`
+- **Visual Plots**: `user_data/plot/[strategy]_[timestamp]/`
+- **HTML Reports**: `user_data/backtest_results/[strategy]_backtest_[timestamp].html`
+- **Trade Analysis**: Detailed trade-by-trade breakdown with entry/exit analysis
 
 ## 🔧 Parameter Optimization
 

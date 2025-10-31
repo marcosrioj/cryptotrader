@@ -33,11 +33,11 @@ error() {
 
 # Verificar argumentos
 if [ $# -ne 2 ]; then
-    echo "Uso: $0 [rsi|macd] [dry|live]"
+    echo "Uso: $0 [ema|bb] [dry|live]"
     echo ""
     echo "Estratégias disponíveis:"
-    echo "  rsi  - RSI + Bollinger Bands Strategy"
-    echo "  macd - MACD + EMA Strategy"
+    echo "  ema  - EMA Crossover Scalping (1m timeframe)"
+    echo "  bb   - Bollinger Squeeze Scalping (5m timeframe)"
     echo ""
     echo "Modos:"
     echo "  dry  - Modo simulação (recomendado)"
@@ -50,10 +50,10 @@ MODE=$2
 
 # Validar argumentos
 case $STRATEGY_TYPE in
-    rsi|macd)
+    ema|bb)
         ;;
     *)
-        error "Estratégia inválida. Use 'rsi' ou 'macd'"
+        error "Estratégia inválida. Use 'ema' ou 'bb'"
         ;;
 esac
 
@@ -66,14 +66,17 @@ case $MODE in
 esac
 
 # Configurar variáveis baseadas na estratégia
-if [ "$STRATEGY_TYPE" = "rsi" ]; then
-    CONFIG_FILE="$PROJECT_DIR/user_data/config/rsi_bb_config.json"
-    STRATEGY_NAME="RSIBBStrategy"
-    STRATEGY_DESC="RSI + Bollinger Bands"
+if [ "$STRATEGY_TYPE" = "ema" ]; then
+    CONFIG_FILE="$PROJECT_DIR/user_data/config/ema_scalping_config.json"
+    STRATEGY_NAME="EMAScalpingStrategy"
+    STRATEGY_DESC="EMA Crossover Scalping (1m)"
+elif [ "$STRATEGY_TYPE" = "bb" ]; then
+    CONFIG_FILE="$PROJECT_DIR/user_data/config/bollinger_squeeze_config.json"
+    STRATEGY_NAME="BollingerSqueezeScalpStrategy"
+    STRATEGY_DESC="Bollinger Squeeze Scalping (5m)"
 else
-    CONFIG_FILE="$PROJECT_DIR/user_data/config/macd_ema_config.json"
-    STRATEGY_NAME="MACDEMAStrategy"
-    STRATEGY_DESC="MACD + EMA"
+    error "Estratégia inválida. Use 'ema' ou 'bb'"
+    exit 1
 fi
 
 # Verificar se ambiente virtual existe

@@ -1,6 +1,6 @@
 # EMA Crossover Scalping Strategy
-# Estratégia de scalping baseada em cruzamento de EMAs rápidas
-# Otimizada para timeframes de 1m e 5m
+# Fast scalping strategy based on EMA crossovers
+# Optimized for 1m and 5m timeframes
 
 import talib.abstract as ta
 from freqtrade.strategy import IStrategy, DecimalParameter, IntParameter
@@ -12,51 +12,51 @@ from datetime import timedelta
 
 class EMAScalpingStrategy(IStrategy):
     """
-    Estratégia EMA Crossover Scalping
+    EMA Crossover Scalping Strategy
     
-    Esta estratégia utiliza:
-    - EMAs rápidas (5, 10, 21) para sinais de entrada/saída
-    - RSI para evitar extremos
-    - Volume para confirmação
-    - Stop loss apertado para scalping
+    This strategy uses:
+    - Fast EMAs (5, 10, 21) for entry/exit signals
+    - RSI to avoid extremes
+    - Volume for confirmation
+    - Tight stop loss for scalping
     
-    Sinais de compra:
-    - EMA 5 cruza acima da EMA 10
-    - EMA 10 acima da EMA 21 (tendência de alta)
-    - RSI entre 30-70 (não em extremos)
-    - Volume acima da média
+    Buy signals:
+    - EMA 5 crosses above EMA 10
+    - EMA 10 above EMA 21 (uptrend)
+    - RSI between 30-70 (not at extremes)
+    - Volume above average
     
-    Sinais de venda:
-    - EMA 5 cruza abaixo da EMA 10
-    - Ou RSI > 75
-    - Ou stop loss/take profit
+    Sell signals:
+    - EMA 5 crosses below EMA 10
+    - Or RSI > 75
+    - Or stop loss/take profit
     """
 
-    # Configurações básicas da estratégia
+    # Basic strategy configuration
     INTERFACE_VERSION = 3
     
-    # Configurações de risco para scalping
-    stoploss = -0.02  # Stop loss de 2% (apertado para scalping)
+    # Risk settings for scalping
+    stoploss = -0.02  # 2% stop loss (tight for scalping)
     
-    # Configurações de timeframe
-    timeframe = '1m'  # Scalping em 1 minuto
+    # Timeframe settings
+    timeframe = '1m'  # 1-minute scalping
     
-    # Configurações de trailing stop
+    # Trailing stop configuration
     trailing_stop = True
     trailing_stop_positive = 0.005  # 0.5%
     trailing_stop_positive_offset = 0.01  # 1%
     trailing_only_offset_is_reached = True
     
-    # ROI agressivo para scalping
+    # Aggressive ROI for scalping
     minimal_roi = {
-        "0": 0.03,    # 3% imediato
-        "3": 0.02,    # 2% após 3 minutos
-        "5": 0.015,   # 1.5% após 5 minutos
-        "10": 0.01,   # 1% após 10 minutos
-        "15": 0.005   # 0.5% após 15 minutos
+        "0": 0.03,    # 3% immediate
+        "3": 0.02,    # 2% after 3 minutes
+        "5": 0.015,   # 1.5% after 5 minutes
+        "10": 0.01,   # 1% after 10 minutes
+        "15": 0.005   # 0.5% after 15 minutes
     }
     
-    # Parâmetros otimizáveis
+    # Optimizable parameters
     ema_fast = IntParameter(3, 8, default=5, space="buy")
     ema_medium = IntParameter(8, 15, default=10, space="buy")
     ema_slow = IntParameter(18, 25, default=21, space="buy")
@@ -68,7 +68,7 @@ class EMAScalpingStrategy(IStrategy):
     
     volume_factor = DecimalParameter(1.2, 2.0, default=1.5, space="buy")
     
-    # Configurações de proteção
+    # Protection settings
     use_exit_signal = True
     exit_profit_only = False
     ignore_roi_if_entry_signal = False
@@ -77,10 +77,10 @@ class EMAScalpingStrategy(IStrategy):
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Adiciona indicadores técnicos ao dataframe
+        Add technical indicators to dataframe
         """
         
-        # EMAs para crossover
+        # EMAs for crossover
         dataframe['ema_fast'] = ta.EMA(dataframe, timeperiod=self.ema_fast.value)
         dataframe['ema_medium'] = ta.EMA(dataframe, timeperiod=self.ema_medium.value)
         dataframe['ema_slow'] = ta.EMA(dataframe, timeperiod=self.ema_slow.value)
@@ -95,7 +95,7 @@ class EMAScalpingStrategy(IStrategy):
             (dataframe['ema_fast'].shift(1) >= dataframe['ema_medium'].shift(1))
         )
         
-        # Tendência
+        # Trend
         dataframe['uptrend'] = dataframe['ema_medium'] > dataframe['ema_slow']
         dataframe['downtrend'] = dataframe['ema_medium'] < dataframe['ema_slow']
         
@@ -106,50 +106,50 @@ class EMAScalpingStrategy(IStrategy):
         dataframe['volume_sma'] = ta.SMA(dataframe['volume'], timeperiod=10)
         dataframe['volume_ratio'] = dataframe['volume'] / dataframe['volume_sma']
         
-        # MACD para confirmação adicional
+        # MACD for additional confirmation
         macd = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
         dataframe['macd'] = macd['macd']
         dataframe['macdsignal'] = macd['macdsignal']
         dataframe['macdhist'] = macd['macdhist']
         
-        # Bollinger Bands para volatilidade
+        # Bollinger Bands for volatility
         bollinger = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2, nbdevdn=2)
         dataframe['bb_lowerband'] = bollinger['lowerband']
         dataframe['bb_upperband'] = bollinger['upperband']
         dataframe['bb_width'] = (bollinger['upperband'] - bollinger['lowerband']) / dataframe['close']
         
-        # ATR para volatilidade
+        # ATR for volatility
         dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
         
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Sinais de entrada para scalping
+        Entry signals for scalping
         """
         
         conditions = []
         
-        # Condição principal: EMA crossover para cima
+        # Main condition: EMA crossover upward
         conditions.append(dataframe['ema_cross_up'])
         
-        # Tendência de alta
+        # Uptrend
         conditions.append(dataframe['uptrend'])
         
-        # RSI em zona neutra (não sobrecomprado/sobrevendido)
+        # RSI in neutral zone (not overbought/oversold)
         conditions.append(dataframe['rsi'] >= self.rsi_buy_min.value)
         conditions.append(dataframe['rsi'] <= self.rsi_buy_max.value)
         
-        # Volume confirmando
+        # Volume confirmation
         conditions.append(dataframe['volume_ratio'] > self.volume_factor.value)
         
-        # MACD momentum positivo
+        # MACD positive momentum
         conditions.append(dataframe['macdhist'] > 0)
         
-        # Volatilidade adequada para scalping
+        # Adequate volatility for scalping
         conditions.append(dataframe['bb_width'] > 0.015)
         
-        # Preço acima da EMA lenta
+        # Price above slow EMA
         conditions.append(dataframe['close'] > dataframe['ema_slow'])
         
         if conditions:
@@ -162,30 +162,30 @@ class EMAScalpingStrategy(IStrategy):
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Sinais de saída para scalping
+        Exit signals for scalping
         """
         
         conditions = []
         
-        # Condição principal: EMA crossover para baixo
+        # Main condition: EMA crossover downward
         conditions.append(dataframe['ema_cross_down'])
         
-        # Condições alternativas
+        # Alternative conditions
         alt_conditions = []
         
-        # RSI em sobrecompra
+        # RSI overbought
         alt_conditions.append(dataframe['rsi'] > self.rsi_sell_threshold.value)
         
-        # MACD perdendo momentum
+        # MACD losing momentum
         alt_conditions.append(
             (dataframe['macd'] < dataframe['macdsignal']) &
             (dataframe['macdhist'] < dataframe['macdhist'].shift(1))
         )
         
-        # Quebra da tendência
+        # Trend break
         alt_conditions.append(dataframe['downtrend'])
         
-        # Combinar condições
+        # Combine conditions
         main_exit = np.logical_and.reduce(conditions) if conditions else False
         alt_exit = np.logical_or.reduce(alt_conditions) if alt_conditions else False
         
@@ -196,31 +196,31 @@ class EMAScalpingStrategy(IStrategy):
     def custom_stoploss(self, pair: str, trade, current_time, current_rate, 
                        current_profit, **kwargs):
         """
-        Stop loss dinâmico baseado em ATR para scalping
+        Dynamic stop loss based on ATR for scalping
         """
         dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
         last_candle = dataframe.iloc[-1].squeeze()
         
-        # Stop loss baseado em ATR (mais apertado para scalping)
+        # Stop loss based on ATR (tighter for scalping)
         atr_multiplier = 1.5
         atr_stop = atr_multiplier * last_candle['atr'] / current_rate
         
-        # Não pode ser menor que o stop loss fixo
+        # Cannot be smaller than fixed stop loss
         return max(-atr_stop, self.stoploss)
 
     def custom_exit(self, pair: str, trade, current_time, current_rate,
                    current_profit, **kwargs):
         """
-        Saídas personalizadas para scalping
+        Custom exits for scalping
         """
         dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
         last_candle = dataframe.iloc[-1].squeeze()
         
-        # Saída rápida se lucro alto em pouco tempo
+        # Quick exit if high profit in short time
         if current_profit > 0.02 and (current_time - trade.open_date_utc.replace(tzinfo=None)).total_seconds() < 120:
             return 'quick_profit_scalp'
         
-        # Saída se RSI extremo e lucro positivo
+        # Exit if RSI extreme and positive profit
         if current_profit > 0.005 and last_candle['rsi'] > 80:
             return 'rsi_extreme_exit'
         
@@ -230,6 +230,6 @@ class EMAScalpingStrategy(IStrategy):
                 proposed_leverage: float, max_leverage: float, entry_tag, side: str,
                 **kwargs) -> float:
         """
-        Alavancagem para scalping
+        Leverage for scalping
         """
-        return 10.0  # Alavancagem 10x (configurar manualmente na Bybit)
+        return 10.0  # 10x leverage (configure manually on Bybit)

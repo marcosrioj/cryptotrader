@@ -1,322 +1,336 @@
-# CryptoTrader - FreqTrade Strategies
+# CryptoTrader - FreqTrade Scalping Strategies
 
-Este repositório contém estratégias de trading automatizado para criptomoedas usando FreqTrade, incluindo duas das estratégias mais populares e testadas da comunidade.
+This repository contains automated cryptocurrency trading strategies using FreqTrade, focused on high-frequency scalping strategies optimized for altcoin futures trading.
 
-## 📋 Índice
+## 📋 Table of Contents
 
-- [Instalação](#instalação)
-- [Estratégias Disponíveis](#estratégias-disponíveis)
-- [Configuração](#configuração)
-- [Como Usar](#como-usar)
+- [Installation](#installation)
+- [Available Strategies](#available-strategies)
+- [Configuration](#configuration)
+- [How to Use](#how-to-use)
 - [Backtesting](#backtesting)
-- [Otimização](#otimização)
-- [Monitoramento](#monitoramento)
-- [Segurança](#segurança)
+- [Optimization](#optimization)
+- [Monitoring](#monitoring)
+- [Security](#security)
 
-## 🚀 Instalação
+## 🚀 Installation
 
-Siga o guia completo de instalação em [FREQTRADE_INSTALLATION_GUIDE.md](./FREQTRADE_INSTALLATION_GUIDE.md)
+Follow the complete installation guide in [FREQTRADE_INSTALLATION_GUIDE.md](./FREQTRADE_INSTALLATION_GUIDE.md)
 
-### Instalação Rápida
+### Quick Installation
 
 ```bash
-# Clonar o repositório
+# Clone the repository
 git clone https://github.com/marcosrioj/cryptotrader.git
 cd cryptotrader
 
-# Seguir os passos do guia de instalação do FreqTrade
-# As estratégias e configurações já estão organizadas em user_data/
+# Follow the FreqTrade installation guide steps
+# Strategies and configurations are already organized in user_data/
 
-# Configuração automática do ambiente
+# Automatic environment setup
 ./setup_environment.sh
 ```
 
-## 📊 Estratégias Disponíveis
+## 📊 Available Strategies
 
-**Exchange Configurada**: Bybit Perpetual Futures (Swap)
-**Formato dos Pares**: `SYMBOL/USDT:USDT` (ex: `BTC/USDT:USDT`)
-**Modo de Trading**: Futuros com margem isolada
+**Configured Exchange**: Bybit Perpetual Futures (Swap)
+**Pair Format**: `SYMBOL/USDT:USDT` (e.g., `BTC/USDT:USDT`)
+**Trading Mode**: Futures with isolated margin
 
-### 1. RSI + Bollinger Bands Strategy (`RSIBBStrategy`)
+### 1. EMA Crossover Scalping Strategy (`EMAScalpingStrategy`)
 
-**Descrição**: Uma das estratégias mais populares que combina RSI para identificar condições de sobrecompra/sobrevenda com Bollinger Bands para níveis de suporte e resistência.
+**Description**: High-frequency scalping strategy using EMA crossovers for rapid entry/exit signals on 1-minute timeframes.
 
-**Características**:
-- ⏰ **Timeframe**: 1h (recomendado)
-- 📈 **Stop Loss**: 5%
-- 🎯 **Take Profit**: ROI escalonado (15% → 2%)
-- 🔄 **Trailing Stop**: Ativado
-- 💰 **Stake**: $5 USDT por trade
-- 📊 **Alavancagem**: 10x
-- 🎲 **Max Trades**: 8 simultâneos
+**Characteristics**:
+- ⏰ **Timeframe**: 1m (scalping)
+- 📈 **Stop Loss**: 2%
+- 🎯 **Take Profit**: Aggressive ROI (3% immediate)
+- 🔄 **Trailing Stop**: Disabled for quick exits
+- 💰 **Stake**: $5 USDT per trade
+- 📊 **Leverage**: 10x
+- 🎲 **Max Trades**: 10 simultaneous
 
-**Sinais de Entrada**:
-- RSI < 30 (sobrevenda)
-- Preço toca banda inferior do Bollinger
-- Volume acima da média (1.5x)
-- MACD em território positivo
-- ADX > 20 (força da tendência)
+**Entry Signals**:
+- EMA 5 crosses above EMA 10
+- EMA 10 > EMA 21 (trend confirmation)
+- RSI between 30-70 (avoid extremes)
+- Volume > 1.5x average
+- Price action momentum
 
-**Sinais de Saída**:
-- RSI > 70 (sobrecompra)
-- Preço toca banda superior do Bollinger
-- MACD cruza para baixo
-- Stop loss/Take profit
+**Exit Signals**:
+- EMA 5 crosses below EMA 10
+- RSI > 70 or RSI < 30
+- Stop loss/Take profit triggered
+- Quick profit taking (3% target)
 
-### 2. MACD + EMA Strategy (`MACDEMAStrategy`)
+### 2. Bollinger Squeeze Scalping Strategy (`BollingerSqueezeScalpStrategy`)
 
-**Descrição**: Estratégia clássica baseada em MACD para sinais de entrada/saída com filtro de tendência usando médias móveis exponenciais.
+**Description**: Volatility breakout scalping strategy that detects Bollinger Bands squeeze conditions and trades the subsequent breakouts.
 
-**Características**:
-- ⏰ **Timeframe**: 4h (recomendado)
-- 📈 **Stop Loss**: 6%
-- 🎯 **Take Profit**: ROI escalonado (20% → 2%)
-- 🔄 **Trailing Stop**: Ativado
-- 💰 **Stake**: $5 USDT por trade
-- 📊 **Alavancagem**: 10x
-- 🎲 **Max Trades**: 6 simultâneos
+**Characteristics**:
+- ⏰ **Timeframe**: 5m (short-term scalping)
+- 📈 **Stop Loss**: 2.5%
+- 🎯 **Take Profit**: Quick scalping targets
+- 🔄 **Trailing Stop**: Disabled for rapid exits
+- 💰 **Stake**: $5 USDT per trade
+- 📊 **Leverage**: 10x
+- 🎲 **Max Trades**: 8 simultaneous
 
-**Sinais de Entrada**:
-- MACD cruza acima da linha de sinal
-- Preço em tendência de alta (EMA 12 > EMA 21 > EMA 50)
-- Volume > 1.8x da média
-- RSI < 70 (não sobrecompra)
-- ADX > 25 (tendência forte)
+**Entry Signals**:
+- Bollinger Bands squeeze detected (low volatility)
+- Price breakout above/below squeeze range
+- Volume spike (>2x average) confirming breakout
+- Keltner Channel confirmation
+- Momentum indicators alignment
 
-**Sinais de Saída**:
-- MACD cruza abaixo da linha de sinal
-- Quebra da estrutura de tendência
-- RSI > 80 (sobrecompra extrema)
-- Stop loss/Take profit
+**Exit Signals**:
+- Bollinger Bands expansion completes
+- Volume returns to normal levels
+- Opposite squeeze signal
+- Stop loss/Take profit triggered
 
-## ⚙️ Configuração
+## ⚙️ Configuration
 
-### Configuração das APIs
+### API Configuration
 
-1. **Crie um arquivo `.env`** na raiz do projeto:
+1. **Create a `.env` file** in the project root:
 
 ```bash
-# APIs da Exchange (Bybit)
-export FREQTRADE_API_KEY="sua_api_key_bybit"
-export FREQTRADE_API_SECRET="sua_api_secret_bybit"
+# Exchange APIs (Bybit)
+export FREQTRADE_API_KEY="your_bybit_api_key"
+export FREQTRADE_API_SECRET="your_bybit_api_secret"
 
-# Telegram (opcional)
-export TELEGRAM_TOKEN="seu_bot_token"
-export TELEGRAM_CHAT_ID="seu_chat_id"
+# Telegram (optional)
+export TELEGRAM_TOKEN="your_bot_token"
+export TELEGRAM_CHAT_ID="your_chat_id"
 ```
 
-2. **Carregue as variáveis de ambiente**:
+2. **Load environment variables**:
 
 ```bash
 source .env
 ```
 
-### Configurações Prontas
+### Ready-to-use Configurations
 
-- **RSI + BB Strategy**: `user_data/config/rsi_bb_config.json`
-- **MACD + EMA Strategy**: `user_data/config/macd_ema_config.json`
+- **EMA Scalping Strategy**: `user_data/config/ema_scalping_config.json`
+- **Bollinger Squeeze Strategy**: `user_data/config/bollinger_squeeze_config.json`
 
-### Estrutura do Projeto
+### Project Structure
 
 ```
 cryptotrader/
 ├── user_data/
 │   ├── strategies/
-│   │   ├── RSIBBStrategy.py
-│   │   └── MACDEMAStrategy.py
+│   │   ├── EMAScalpingStrategy.py
+│   │   └── BollingerSqueezeScalpStrategy.py
 │   └── config/
-│       ├── config.json              # ← Configuração base da exchange
-│       ├── rsi_bb_config.json       # ← Config específica RSI+BB
-│       └── macd_ema_config.json     # ← Config específica MACD+EMA
-├── .env                             # ← Credenciais (não no git)
-├── .env.example                     # ← Exemplo de credenciais
+│       ├── config.json                      # ← Base exchange configuration
+│       ├── ema_scalping_config.json         # ← EMA scalping specific config
+│       └── bollinger_squeeze_config.json    # ← Bollinger squeeze specific config
+├── .env                                     # ← Credentials (not in git)
+├── .env.example                             # ← Credentials example
 ├── run_strategy.sh
 ├── monitor.sh
 └── README.md
 ```
 
-**Herança de Configuração**: Todos os arquivos de config herdam as configurações da exchange (`name`, `key`, `secret`) do `config.json` base.
+**Configuration Inheritance**: All config files inherit exchange settings (`name`, `key`, `secret`) from the base `config.json`.
 
-## 🎮 Como Usar
+## 🎮 How to Use
 
-### 1. Modo Dry Run (Simulação)
+### 1. Dry Run Mode (Simulation)
 
 ```bash
-# Ativar ambiente virtual
+# Activate virtual environment
 source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate
 
-# RSI + Bollinger Bands (Dry Run)
+# EMA Scalping (Dry Run)
 freqtrade trade \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data \
     --dry-run
 
-# MACD + EMA (Dry Run)
+# Bollinger Squeeze (Dry Run)
 freqtrade trade \
-    --config user_data/config/macd_ema_config.json \
-    --strategy MACDEMAStrategy \
+    --config user_data/config/bollinger_squeeze_config.json \
+    --strategy BollingerSqueezeScalpStrategy \
     --userdir user_data \
     --dry-run
 ```
 
-### 2. Modo Live (Trading Real)
+### 2. Live Mode (Real Trading)
 
-⚠️ **ATENÇÃO**: Teste sempre em dry-run primeiro!
+⚠️ **WARNING**: Always test in dry-run first!
 
 ```bash
-# RSI + Bollinger Bands (LIVE)
+# EMA Scalping (LIVE)
 freqtrade trade \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data
 
-# MACD + EMA (LIVE)
+# Bollinger Squeeze (LIVE)
 freqtrade trade \
-    --config user_data/config/macd_ema_config.json \
-    --strategy MACDEMAStrategy \
+    --config user_data/config/bollinger_squeeze_config.json \
+    --strategy BollingerSqueezeScalpStrategy \
     --userdir user_data
 ```
 
 ### 3. Web Interface
 
 ```bash
-# Iniciar interface web
-freqtrade webserver --config user_data/config/rsi_bb_config.json
+# Start web interface
+freqtrade webserver --config user_data/config/ema_scalping_config.json
 
-# Acesse: http://localhost:8080
-# Usuário: freqtrader
-# Senha: SuperSecretPassword
+# Access: http://localhost:8080
+# User: freqtrader
+# Password: SuperSecretPassword
+```
+
+### 4. Using the Run Script
+
+```bash
+# EMA scalping in simulation mode
+./run_strategy.sh ema dry
+
+# Bollinger squeeze in simulation mode
+./run_strategy.sh bb dry
+
+# Live trading (use with caution)
+./run_strategy.sh ema live
+./run_strategy.sh bb live
 ```
 
 ## 📈 Backtesting
 
-### Download de Dados
+### Data Download
 
 ```bash
-# Download dados para RSI + BB (1h, 30 dias)
+# Download data for EMA Scalping (1m, 30 days)
 freqtrade download-data \
-    --config user_data/config/rsi_bb_config.json \
-    --timeframe 1h \
+    --config user_data/config/ema_scalping_config.json \
+    --timeframe 1m \
     --days 30
 
-# Download dados para MACD + EMA (4h, 60 dias)
+# Download data for Bollinger Squeeze (5m, 60 days)
 freqtrade download-data \
-    --config user_data/config/macd_ema_config.json \
-    --timeframe 4h \
+    --config user_data/config/bollinger_squeeze_config.json \
+    --timeframe 5m \
     --days 60
 ```
 
-### Executar Backtests
+### Run Backtests
 
 ```bash
-# Backtest RSI + BB Strategy
+# Backtest EMA Scalping Strategy
 freqtrade backtesting \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data \
     --timerange 20231001-20241030
 
-# Backtest MACD + EMA Strategy
+# Backtest Bollinger Squeeze Strategy
 freqtrade backtesting \
-    --config user_data/config/macd_ema_config.json \
-    --strategy MACDEMAStrategy \
+    --config user_data/config/bollinger_squeeze_config.json \
+    --strategy BollingerSqueezeScalpStrategy \
     --userdir user_data \
     --timerange 20231001-20241030
 
-# Backtest com análise detalhada
+# Backtest with detailed analysis
 freqtrade backtesting \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data \
     --timerange 20231001-20241030 \
     --breakdown month week
 ```
 
-## 🔧 Otimização de Parâmetros
+## 🔧 Parameter Optimization
 
-### Hyperopt - Otimização Automática
+### Hyperopt - Automatic Optimization
 
 ```bash
-# Otimizar RSI + BB Strategy (100 épocas)
+# Optimize EMA Scalping Strategy (100 epochs)
 freqtrade hyperopt \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data \
     --hyperopt-loss SharpeHyperOptLoss \
     --epochs 100 \
     --spaces buy sell
 
-# Otimizar MACD + EMA Strategy (200 épocas)
+# Optimize Bollinger Squeeze Strategy (200 epochs)
 freqtrade hyperopt \
-    --config user_data/config/macd_ema_config.json \
-    --strategy MACDEMAStrategy \
+    --config user_data/config/bollinger_squeeze_config.json \
+    --strategy BollingerSqueezeScalpStrategy \
     --userdir user_data \
     --hyperopt-loss SortinoHyperOptLoss \
     --epochs 200 \
     --spaces buy sell
 
-# Ver resultados da otimização
+# View optimization results
 freqtrade hyperopt-list --best 10
 freqtrade hyperopt-show -n 1
 ```
 
-### Espaços de Otimização Disponíveis
+### Available Optimization Spaces
 
-- **buy**: Parâmetros de entrada
-- **sell**: Parâmetros de saída
-- **roi**: Tabela ROI
+- **buy**: Entry parameters
+- **sell**: Exit parameters
+- **roi**: ROI table
 - **stoploss**: Stop loss
 - **trailing**: Trailing stop
 
-## 📊 Monitoramento
+## 📊 Monitoring
 
-### Comandos Úteis
+### Useful Commands
 
 ```bash
-# Status do bot em tempo real
+# Real-time bot status
 freqtrade status
 
-# Histórico de trades
+# Trade history
 freqtrade show_trades --db-url sqlite:///tradesv3.sqlite
 
-# Performance por par
+# Performance per pair
 freqtrade show_trades --db-url sqlite:///tradesv3.sqlite --print-json | jq
 
-# Plots de análise
+# Analysis plots
 freqtrade plot-dataframe \
-    --config user_data/config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config user_data/config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --userdir user_data \
     --pair BTC/USDT
 ```
 
-### Logs e Debugging
+### Logs and Debugging
 
 ```bash
-# Monitorar logs em tempo real
+# Monitor real-time logs
 tail -f ~/freqtrade/user_data/logs/freqtrade.log
 
-# Logs com nível debug
+# Debug level logs
 freqtrade trade \
-    --config config/rsi_bb_config.json \
-    --strategy RSIBBStrategy \
+    --config config/ema_scalping_config.json \
+    --strategy EMAScalpingStrategy \
     --dry-run \
     --loglevel DEBUG
 ```
 
-## 🔒 Segurança e Melhores Práticas
+## 🔒 Security and Best Practices
 
-### ⚡ Configuração de Alavancagem
+### ⚡ Leverage Configuration
 
-**IMPORTANTE**: As estratégias estão configuradas com alavancagem 10x para maximizar retornos, mas isso aumenta significativamente os riscos:
+**IMPORTANT**: The strategies are configured with 10x leverage to maximize returns, but this significantly increases risks:
 
-- **Stake por trade**: $5 USDT
-- **Exposição real**: $50 USDT por trade (5 × 10x)
-- **Risco elevado**: Perdas podem ser 10x maiores
-- **Margem necessária**: Menor capital inicial necessário
+- **Stake per trade**: $5 USDT
+- **Real exposure**: $50 USDT per trade (5 × 10x)
+- **High risk**: Losses can be 10x larger
+- **Required margin**: Less initial capital needed
 
-### ⚠️ Gestão de Risco com Alavancagem
+### ⚠️ Risk Management with Leverage
 
 ```json
 {
@@ -339,18 +353,18 @@ freqtrade trade \
 }
 ```
 
-### ✅ Checklist de Segurança
+### ✅ Security Checklist
 
-- [ ] **Sempre teste em dry-run primeiro**
-- [ ] **Use variáveis de ambiente para API keys**
-- [ ] **Entenda os riscos da alavancagem 10x**
-- [ ] **Monitore margem disponível constantemente**
-- [ ] **Defina stop loss rigoroso**
-- [ ] **Use apenas 1-2% do capital total**
-- [ ] **Monitore regularmente**
-- [ ] **Mantenha logs organizados**
-- [ ] **Faça backup das configurações**
-- [ ] **NUNCA invista mais do que pode perder**
+- [ ] **Always test in dry-run first**
+- [ ] **Use environment variables for API keys**
+- [ ] **Understand 10x leverage risks**
+- [ ] **Monitor available margin constantly**
+- [ ] **Set strict stop loss**
+- [ ] **Use only 1-2% of total capital**
+- [ ] **Monitor regularly**
+- [ ] **Keep organized logs**
+- [ ] **Backup configurations**
+- [ ] **NEVER invest more than you can afford to lose**
 
 ### 🛡️ Configurações de Proteção
 
@@ -375,73 +389,73 @@ freqtrade trade \
 }
 ```
 
-## 📋 Comandos Essenciais
+## 📋 Essential Commands
 
-### Setup Inicial
+### Initial Setup
 
 ```bash
-# 1. Ativar ambiente virtual
+# 1. Activate virtual environment
 source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate
 
-# 2. Verificar instalação
+# 2. Verify installation
 freqtrade --version
 
-# 3. Configurar variáveis de ambiente (já prontas em .env)
+# 3. Configure environment variables (ready in .env)
 source .env
 ```
 
-### Operação Diária
+### Daily Operation
 
 ```bash
-# Iniciar trading (dry-run)
-freqtrade trade --config user_data/config/rsi_bb_config.json --strategy RSIBBStrategy --userdir user_data --dry-run
+# Start trading (dry-run)
+freqtrade trade --config user_data/config/ema_scalping_config.json --strategy EMAScalpingStrategy --userdir user_data --dry-run
 
-# Verificar status
+# Check status
 freqtrade status
 
-# Parar bot com segurança
-Ctrl+C (ou freqtrade stop)
+# Stop bot safely
+Ctrl+C (or freqtrade stop)
 
-# Atualizar dados
-freqtrade download-data --config user_data/config/rsi_bb_config.json --days 1
+# Update data
+freqtrade download-data --config user_data/config/ema_scalping_config.json --days 1
 ```
 
 ## 🆘 Troubleshooting
 
-### Problemas Comuns
+### Common Issues
 
-1. **Erro de importação**: `pip install freqtrade[all] --upgrade`
-2. **API não funcionando**: Verificar keys e permissões
-3. **Sem sinais de entrada**: Verificar parâmetros e dados
-4. **Performance ruim**: Fazer backtest e otimização
+1. **Import error**: `pip install freqtrade[all] --upgrade`
+2. **API not working**: Check keys and permissions
+3. **No entry signals**: Check parameters and data
+4. **Poor performance**: Run backtest and optimization
 
-### Suporte
+### Support
 
-- 📖 [Documentação FreqTrade](https://www.freqtrade.io/)
-- 💬 [Discord FreqTrade](https://discord.gg/p7nuUNVfP7)
-- 🐛 [Issues do Projeto](https://github.com/marcosrioj/cryptotrader/issues)
+- 📖 [FreqTrade Documentation](https://www.freqtrade.io/)
+- 💬 [FreqTrade Discord](https://discord.gg/p7nuUNVfP7)
+- 🐛 [Project Issues](https://github.com/marcosrioj/cryptotrader/issues)
 
 ---
 
 ## ⚠️ Disclaimer
 
-**⚡ Este software utiliza alavancagem 10x e está configurado para FUTURES trading. Os riscos são extremamente elevados:**
+**⚡ This software uses 10x leverage and is configured for FUTURES trading. Risks are extremely high:**
 
-- **Alavancagem 10x**: Ganhos e perdas são multiplicados por 10
-- **Futures Trading**: Mercado mais volátil que spot
-- **Stop Loss obrigatório**: 5-6% pode resultar em 50-60% de perda real
-- **Margem**: Monitore sempre sua margem disponível
-- **Capital mínimo recomendado**: $500-1000 USDT para operar com segurança
+- **10x Leverage**: Gains and losses are multiplied by 10
+- **Futures Trading**: More volatile market than spot
+- **Mandatory Stop Loss**: 2-2.5% can result in 20-25% real loss
+- **Margin**: Always monitor your available margin
+- **Minimum recommended capital**: $500-1000 USDT to operate safely
 
-**Sempre:**
+**Always:**
 
-- Teste estratégias em modo dry-run
-- Faça backtests extensivos
-- Use apenas capital que pode perder
-- Monitore regularmente suas posições
-- Mantenha-se atualizado com o mercado
+- Test strategies in dry-run mode
+- Perform extensive backtests
+- Use only capital you can afford to lose
+- Monitor your positions regularly
+- Stay updated with market conditions
 
-**Não nos responsabilizamos por perdas financeiras.**
+**We are not responsible for financial losses.**
 
 ---
 

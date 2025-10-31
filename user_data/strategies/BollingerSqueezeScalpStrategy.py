@@ -1,6 +1,6 @@
 # Bollinger Bands Squeeze Scalping Strategy
-# Estratégia de scalping baseada em Bollinger Bands e squeeze de volatilidade
-# Otimizada para capturar movimentos rápidos após baixa volatilidade
+# Scalping strategy based on Bollinger Bands and volatility squeeze
+# Optimized to capture fast movements after low volatility
 
 import talib.abstract as ta
 from freqtrade.strategy import IStrategy, DecimalParameter, IntParameter
@@ -10,35 +10,35 @@ import numpy as np
 
 class BollingerSqueezeScalpStrategy(IStrategy):
     """
-    Estratégia Bollinger Bands Squeeze Scalping
+    Bollinger Bands Squeeze Scalping Strategy
     
-    Esta estratégia utiliza:
-    - Bollinger Bands para identificar squeeze de volatilidade
-    - RSI para momentum
-    - Volume para confirmação de breakout
-    - ADX para força da tendência
+    This strategy uses:
+    - Bollinger Bands to identify volatility squeeze
+    - RSI for momentum
+    - Volume for breakout confirmation
+    - ADX for trend strength
     
-    Sinais de compra:
-    - Bollinger Bands em squeeze (baixa volatilidade)
-    - Preço quebra acima da banda superior
-    - RSI > 50 (momentum de alta)
-    - Volume spike (2x média)
-    - ADX > 20 (tendência se formando)
+    Buy signals:
+    - Bollinger Bands in squeeze (low volatility)
+    - Price breaks above upper band
+    - RSI > 50 (upward momentum)
+    - Volume spike (2x average)
+    - ADX > 20 (trend forming)
     
-    Sinais de venda:
-    - Preço quebra abaixo da banda inferior
-    - RSI < 50 (momentum de baixa)
-    - Ou stop loss/take profit
+    Sell signals:
+    - Price breaks below lower band
+    - RSI < 50 (downward momentum)
+    - Or stop loss/take profit
     """
 
-    # Configurações básicas da estratégia
+    # Basic strategy configuration
     INTERFACE_VERSION = 3
     
-    # Configurações de risco para scalping
-    stoploss = -0.025  # Stop loss de 2.5%
+    # Risk settings for scalping
+    stoploss = -0.025  # 2.5% stop loss
     
-    # Timeframe para scalping
-    timeframe = '5m'  # 5 minutos para menos ruído que 1m
+    # Timeframe for scalping
+    timeframe = '5m'  # 5 minutes for less noise than 1m
     
     # Trailing stop
     trailing_stop = True
@@ -46,7 +46,7 @@ class BollingerSqueezeScalpStrategy(IStrategy):
     trailing_stop_positive_offset = 0.015  # 1.5%
     trailing_only_offset_is_reached = True
     
-    # ROI otimizado para scalping
+    # ROI optimized for scalping
     minimal_roi = {
         "0": 0.04,    # 4% imediato
         "5": 0.025,   # 2.5% após 5 minutos
@@ -55,7 +55,7 @@ class BollingerSqueezeScalpStrategy(IStrategy):
         "30": 0.01    # 1% após 30 minutos
     }
     
-    # Parâmetros otimizáveis
+    # Optimizable parameters
     bb_period = IntParameter(15, 25, default=20, space="buy")
     bb_std = DecimalParameter(1.8, 2.2, default=2.0, space="buy")
     
@@ -154,7 +154,7 @@ class BollingerSqueezeScalpStrategy(IStrategy):
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Sinais de entrada baseados em squeeze e breakout
+        Entry signals based on squeeze and breakout
         """
         
         conditions = []
@@ -200,7 +200,7 @@ class BollingerSqueezeScalpStrategy(IStrategy):
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Sinais de saída para scalping squeeze
+        Exit signals for squeeze scalping
         """
         
         conditions = []
@@ -260,7 +260,7 @@ class BollingerSqueezeScalpStrategy(IStrategy):
     def custom_exit(self, pair: str, trade, current_time, current_rate,
                    current_profit, **kwargs):
         """
-        Saídas personalizadas para squeeze scalping
+        Custom exits for squeeze scalping
         """
         dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
         last_candle = dataframe.iloc[-1].squeeze()

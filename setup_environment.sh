@@ -1,15 +1,15 @@
 #!/bin/bash
-# Script de configuração automática do ambiente CryptoTrader
-# Este script configura todos os caminhos para usar /home/marcos/projects/cryptotrader
+# CryptoTrader automatic environment setup script
+# This script configures all paths to use /home/marcos/projects/cryptotrader
 
 set -e
 
-# Configurações
+# Configuration
 BASE_DIR="/home/marcos/projects/cryptotrader"
 FREQTRADE_DIR="$BASE_DIR/freqtrade"
 USER_DATA_DIR="$BASE_DIR/user_data"
 
-# Cores
+# Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -32,153 +32,153 @@ info() {
     echo -e "${BLUE}[INFO] $1${NC}"
 }
 
-# Verificar se estamos no diretório correto
+# Check if we're in the correct directory
 if [ "$(pwd)" != "$BASE_DIR" ]; then
-    error "Execute este script a partir do diretório: $BASE_DIR"
+    error "Run this script from the directory: $BASE_DIR"
     exit 1
 fi
 
-log "Iniciando configuração do ambiente CryptoTrader..."
+log "Starting CryptoTrader environment setup..."
 
-# Verificar se FreqTrade está instalado
+# Check if FreqTrade is installed
 if [ ! -d "$FREQTRADE_DIR" ]; then
-    warning "FreqTrade não encontrado em $FREQTRADE_DIR"
-    warning "Execute primeiro o guia de instalação do FreqTrade"
+    warning "FreqTrade not found at $FREQTRADE_DIR"
+    warning "Run the FreqTrade installation guide first"
     exit 1
 fi
 
-# Verificar ambiente virtual
+# Check virtual environment
 if [ ! -f "$FREQTRADE_DIR/.venv/bin/activate" ]; then
-    error "Ambiente virtual não encontrado em $FREQTRADE_DIR/.venv/"
+    error "Virtual environment not found at $FREQTRADE_DIR/.venv/"
     exit 1
 fi
 
-# Ativar ambiente virtual
-log "Ativando ambiente virtual..."
+# Activate virtual environment
+log "Activating virtual environment..."
 source "$FREQTRADE_DIR/.venv/bin/activate"
 
-# Verificar se FreqTrade está funcionando
+# Check if FreqTrade is working
 if ! command -v freqtrade &> /dev/null; then
-    error "FreqTrade não está disponível no ambiente virtual"
+    error "FreqTrade is not available in the virtual environment"
     exit 1
 fi
 
-# Criar diretórios necessários
-log "Criando estrutura de diretórios..."
+# Create necessary directories
+log "Creating directory structure..."
 mkdir -p "$USER_DATA_DIR"/{logs,data,backtest_results,hyperopt_results,plot}
 mkdir -p "$BASE_DIR/backups"
 
-# Verificar arquivos de configuração
-log "Verificando arquivos de configuração..."
+# Check configuration files
+log "Checking configuration files..."
 if [ ! -f "$USER_DATA_DIR/config/config.json" ]; then
-    warning "Arquivo config.json não encontrado"
+    warning "config.json file not found"
 fi
 
-if [ ! -f "$USER_DATA_DIR/config/rsi_bb_config.json" ]; then
-    warning "Arquivo rsi_bb_config.json não encontrado"
+if [ ! -f "$USER_DATA_DIR/config/ema_scalping_config.json" ]; then
+    warning "ema_scalping_config.json file not found"
 fi
 
-if [ ! -f "$USER_DATA_DIR/config/macd_ema_config.json" ]; then
-    warning "Arquivo macd_ema_config.json não encontrado"
+if [ ! -f "$USER_DATA_DIR/config/bollinger_squeeze_config.json" ]; then
+    warning "bollinger_squeeze_config.json file not found"
 fi
 
-# Verificar estratégias
-log "Verificando estratégias..."
-if [ ! -f "$USER_DATA_DIR/strategies/RSIBBStrategy.py" ]; then
-    warning "Estratégia RSIBBStrategy.py não encontrada"
+# Check strategies
+log "Checking strategies..."
+if [ ! -f "$USER_DATA_DIR/strategies/EMAScalpingStrategy.py" ]; then
+    warning "EMAScalpingStrategy.py strategy not found"
 fi
 
-if [ ! -f "$USER_DATA_DIR/strategies/MACDEMAStrategy.py" ]; then
-    warning "Estratégia MACDEMAStrategy.py não encontrada"
+if [ ! -f "$USER_DATA_DIR/strategies/BollingerSqueezeScalpStrategy.py" ]; then
+    warning "BollingerSqueezeScalpStrategy.py strategy not found"
 fi
 
-# Verificar arquivo .env
+# Check .env file
 if [ ! -f "$BASE_DIR/.env" ]; then
-    warning "Arquivo .env não encontrado"
+    warning ".env file not found"
     if [ -f "$BASE_DIR/.env.example" ]; then
-        info "Copiando .env.example para .env"
+        info "Copying .env.example to .env"
         cp "$BASE_DIR/.env.example" "$BASE_DIR/.env"
-        warning "Configure suas credenciais no arquivo .env"
+        warning "Configure your credentials in the .env file"
     fi
 else
-    log "Arquivo .env encontrado"
+    log ".env file found"
 fi
 
-# Testar estratégias
-log "Testando estratégias..."
-if freqtrade list-strategies --userdir "$USER_DATA_DIR" | grep -q "RSIBBStrategy"; then
-    log "✅ RSIBBStrategy detectada"
+# Test strategies
+log "Testing strategies..."
+if freqtrade list-strategies --userdir "$USER_DATA_DIR" | grep -q "EMAScalpingStrategy"; then
+    log "✅ EMAScalpingStrategy detected"
 else
-    error "❌ RSIBBStrategy não detectada"
+    error "❌ EMAScalpingStrategy not detected"
 fi
 
-if freqtrade list-strategies --userdir "$USER_DATA_DIR" | grep -q "MACDEMAStrategy"; then
-    log "✅ MACDEMAStrategy detectada"
+if freqtrade list-strategies --userdir "$USER_DATA_DIR" | grep -q "BollingerSqueezeScalpStrategy"; then
+    log "✅ BollingerSqueezeScalpStrategy detected"
 else
-    error "❌ MACDEMAStrategy não detectada"
+    error "❌ BollingerSqueezeScalpStrategy not detected"
 fi
 
-# Testar configurações
-log "Testando configurações..."
-for config in "rsi_bb_config.json" "macd_ema_config.json"; do
+# Test configurations
+log "Testing configurations..."
+for config in "ema_scalping_config.json" "bollinger_squeeze_config.json"; do
     if [ -f "$USER_DATA_DIR/config/$config" ]; then
         if freqtrade show-config --config "$USER_DATA_DIR/config/$config" --userdir "$USER_DATA_DIR" > /dev/null 2>&1; then
-            log "✅ $config válida"
+            log "✅ $config valid"
         else
-            error "❌ $config inválida"
+            error "❌ $config invalid"
         fi
     fi
 done
 
-# Verificar permissões dos scripts
-log "Verificando permissões dos scripts..."
+# Check script permissions
+log "Checking script permissions..."
 for script in "run_strategy.sh" "monitor.sh"; do
     if [ -f "$BASE_DIR/$script" ]; then
         if [ -x "$BASE_DIR/$script" ]; then
-            log "✅ $script executável"
+            log "✅ $script executable"
         else
-            warning "Tornando $script executável..."
+            warning "Making $script executable..."
             chmod +x "$BASE_DIR/$script"
         fi
     else
-        error "❌ Script $script não encontrado"
+        error "❌ Script $script not found"
     fi
 done
 
-# Mostrar informações do ambiente
-info "=== INFORMAÇÕES DO AMBIENTE ==="
-info "Diretório base: $BASE_DIR"
+# Show environment information
+info "=== ENVIRONMENT INFORMATION ==="
+info "Base directory: $BASE_DIR"
 info "FreqTrade: $FREQTRADE_DIR"
 info "User data: $USER_DATA_DIR"
-info "Versão FreqTrade: $(freqtrade --version 2>/dev/null || echo 'Erro ao obter versão')"
-info "Estratégias disponíveis:"
-freqtrade list-strategies --userdir "$USER_DATA_DIR" 2>/dev/null | grep -E "(RSIBBStrategy|MACDEMAStrategy)" || echo "Nenhuma estratégia encontrada"
+info "FreqTrade version: $(freqtrade --version 2>/dev/null || echo 'Error getting version')"
+info "Available strategies:"
+freqtrade list-strategies --userdir "$USER_DATA_DIR" 2>/dev/null | grep -E "(EMAScalpingStrategy|BollingerSqueezeScalpStrategy)" || echo "No strategies found"
 
 echo ""
-log "=== PRÓXIMOS PASSOS ==="
-log "1. Configure suas credenciais no arquivo .env"
-log "2. Execute: source .env"
-log "3. Teste em dry-run: ./run_strategy.sh rsi dry"
-log "4. Monitore: ./monitor.sh status"
+log "=== NEXT STEPS ==="
+log "1. Configure your credentials in the .env file"
+log "2. Run: source .env"
+log "3. Test in dry-run: ./run_strategy.sh ema dry"
+log "4. Monitor: ./monitor.sh status"
 
 echo ""
-log "Configuração do ambiente concluída!"
+log "Environment setup completed!"
 
-# Criar alias úteis
+# Create useful aliases
 cat > "$BASE_DIR/aliases.sh" << 'EOF'
 #!/bin/bash
-# Aliases úteis para CryptoTrader
+# Useful aliases for CryptoTrader
 
-# Ativar ambiente
+# Activate environment
 alias ft-env='source /home/marcos/projects/cryptotrader/freqtrade/.venv/bin/activate && source /home/marcos/projects/cryptotrader/.env'
 
-# Scripts principais
-alias ft-rsi-dry='/home/marcos/projects/cryptotrader/run_strategy.sh rsi dry'
-alias ft-macd-dry='/home/marcos/projects/cryptotrader/run_strategy.sh macd dry'
-alias ft-rsi-live='/home/marcos/projects/cryptotrader/run_strategy.sh rsi live'
-alias ft-macd-live='/home/marcos/projects/cryptotrader/run_strategy.sh macd live'
+# Main scripts
+alias ft-ema-dry='/home/marcos/projects/cryptotrader/run_strategy.sh ema dry'
+alias ft-bb-dry='/home/marcos/projects/cryptotrader/run_strategy.sh bb dry'
+alias ft-ema-live='/home/marcos/projects/cryptotrader/run_strategy.sh ema live'
+alias ft-bb-live='/home/marcos/projects/cryptotrader/run_strategy.sh bb live'
 
-# Monitoramento
+# Monitoring
 alias ft-status='/home/marcos/projects/cryptotrader/monitor.sh status'
 alias ft-monitor='/home/marcos/projects/cryptotrader/monitor.sh monitor'
 alias ft-backup='/home/marcos/projects/cryptotrader/monitor.sh backup'
@@ -186,11 +186,11 @@ alias ft-backup='/home/marcos/projects/cryptotrader/monitor.sh backup'
 # Logs
 alias ft-log='tail -f /home/marcos/projects/cryptotrader/user_data/logs/freqtrade.log'
 
-# Navegação
+# Navigation
 alias ft-cd='cd /home/marcos/projects/cryptotrader'
 
-echo "Aliases carregados! Use ft-env para ativar o ambiente completo"
+echo "Aliases loaded! Use ft-env to activate the complete environment"
 EOF
 
 chmod +x "$BASE_DIR/aliases.sh"
-log "Aliases criados em aliases.sh - Execute: source aliases.sh"
+log "Aliases created in aliases.sh - Run: source aliases.sh"

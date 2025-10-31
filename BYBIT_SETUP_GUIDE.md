@@ -1,43 +1,43 @@
-# Configuração Bybit para FreqTrade Futures
+# Bybit Setup for FreqTrade Futures
 
-Este guia detalha como configurar corretamente a Bybit para trading de futuros/perpetuais com FreqTrade.
+This guide details how to properly configure Bybit for futures/perpetual trading with FreqTrade.
 
-## 🔧 Configuração da API Bybit
+## 🔧 Bybit API Configuration
 
-### 1. Criar API Key na Bybit
+### 1. Create API Key on Bybit
 
-1. Acesse [Bybit API Management](https://www.bybit.com/app/user/api-management)
-2. Clique em "Create New Key"
-3. Configure as permissões necessárias:
+1. Access [Bybit API Management](https://www.bybit.com/app/user/api-management)
+2. Click "Create New Key"
+3. Configure the necessary permissions:
 
-#### ✅ Permissões Obrigatórias
+#### ✅ Required Permissions
 - **Contract - Orders**: Read + Write
 - **Contract - Positions**: Read + Write  
-- **Wallet**: Read (opcional)
-- **Account**: Read (opcional)
+- **Wallet**: Read (optional)
+- **Account**: Read (optional)
 
-#### ❌ Permissões NÃO Recomendadas
-- **Withdrawals**: Desabilitado (segurança)
-- **Transfer**: Desabilitado (segurança)
+#### ❌ NOT Recommended Permissions
+- **Withdrawals**: Disabled (security)
+- **Transfer**: Disabled (security)
 
-### 2. Configurações da Conta Bybit
+### 2. Bybit Account Settings
 
 #### Position Mode
-- Acesse: **Derivatives → Settings → Position Mode**
+- Access: **Derivatives → Settings → Position Mode**
 - Configure: **"One-way Mode"** 
-- ⚠️ **IMPORTANTE**: FreqTrade requer este modo
+- ⚠️ **IMPORTANT**: FreqTrade requires this mode
 
 #### Margin Mode
-- Por padrão: **Isolated Margin** (recomendado)
-- Cross Margin: Possível, mas maior risco
+- Default: **Isolated Margin** (recommended)
+- Cross Margin: Possible, but higher risk
 
-#### Alavancagem
-- Configure manualmente na interface Bybit para cada par
-- Recomendado: **10x** (configurar antes de iniciar o bot)
+#### Leverage
+- Configure manually in Bybit interface for each pair
+- Recommended: **10x** (configure before starting the bot)
 
-## ⚙️ Configuração FreqTrade
+## ⚙️ FreqTrade Configuration
 
-### Arquivo de Configuração Base
+### Base Configuration File
 
 ```json
 {
@@ -63,7 +63,7 @@ Este guia detalha como configurar corretamente a Bybit para trading de futuros/p
 }
 ```
 
-### Formato dos Pares
+### Pair Format
 
 ```json
 "pair_whitelist": [
@@ -73,7 +73,7 @@ Este guia detalha como configurar corretamente a Bybit para trading de futuros/p
 ]
 ```
 
-### Order Book Configuration (Obrigatório)
+### Order Book Configuration (Required)
 
 ```json
 "entry_pricing": {
@@ -86,64 +86,64 @@ Este guia detalha como configurar corretamente a Bybit para trading de futuros/p
 }
 ```
 
-## 🚀 Processo de Setup
+## 🚀 Setup Process
 
-### 1. Configurar API Keys
+### 1. Configure API Keys
 ```bash
-# Editar .env
-export FREQTRADE_API_KEY="sua_api_key_bybit"
-export FREQTRADE_API_SECRET="sua_api_secret_bybit"
+# Edit .env
+export FREQTRADE_API_KEY="your_bybit_api_key"
+export FREQTRADE_API_SECRET="your_bybit_api_secret"
 ```
 
-### 2. Configurar Bybit Web Interface
+### 2. Configure Bybit Web Interface
 
 1. **Position Mode**: One-way Mode
-2. **Alavancagem**: 10x para cada par que vai tradear
-3. **Margin Mode**: Isolated (recomendado)
+2. **Leverage**: 10x for each pair you'll trade
+3. **Margin Mode**: Isolated (recommended)
 
-### 3. Testar Configuração
+### 3. Test Configuration
 
 ```bash
-# Carregar ambiente
+# Load environment
 source .env
 
-# Teste básico
-freqtrade list-markets --exchange bybit --config user_data/config/rsi_bb_config.json
+# Basic test
+freqtrade list-markets --exchange bybit --config user_data/config/ema_scalping_config.json
 
-# Teste dry-run
-./run_strategy.sh rsi dry
+# Dry-run test
+./run_strategy.sh ema dry
 ```
 
-## ⚠️ Pontos Importantes
+## ⚠️ Important Points
 
-### Gestão de Risco
-- **Stake**: $5 USDT por trade
-- **Alavancagem**: 10x = $50 exposição por trade
-- **Stop Loss**: 5-6% = 50-60% de perda real
-- **Capital mínimo**: $500-1000 USDT recomendado
+### Risk Management
+- **Stake**: $5 USDT per trade
+- **Leverage**: 10x = $50 exposure per trade
+- **Stop Loss**: 2-2.5% = 20-25% real loss
+- **Minimum capital**: $500-1000 USDT recommended
 
-### Limitações Bybit
-- **Funding Rates**: Não há histórico, FreqTrade usa cálculo dry-run
-- **Position Mode**: Deve permanecer "One-way" durante trading
-- **Account Type**: Recomendado usar subaccount dedicada
+### Bybit Limitations
+- **Funding Rates**: No history available, FreqTrade uses dry-run calculation
+- **Position Mode**: Must remain "One-way" during trading
+- **Account Type**: Recommended to use dedicated subaccount
 
 ### Troubleshooting
 
-#### Erro: "Freqtrade does not support 'futures' on Bybit"
-- ✅ Solução: Usar `"defaultType": "swap"` e `"trading_mode": "futures"`
+#### Error: "Freqtrade does not support 'futures' on Bybit"
+- ✅ Solution: Use `"defaultType": "swap"` and `"trading_mode": "futures"`
 
-#### Erro: "Invalid symbol" 
-- ✅ Solução: Usar formato `BTC/USDT:USDT` para perpetuais
+#### Error: "Invalid symbol" 
+- ✅ Solution: Use format `BTC/USDT:USDT` for perpetuals
 
-#### Erro: "Insufficient permissions"
-- ✅ Solução: Verificar permissões Contract Orders + Positions
+#### Error: "Insufficient permissions"
+- ✅ Solution: Check Contract Orders + Positions permissions
 
-#### Erro: "Position mode not supported"
-- ✅ Solução: Configurar "One-way Mode" na Bybit
+#### Error: "Position mode not supported"
+- ✅ Solution: Configure "One-way Mode" on Bybit
 
-## 📊 Monitoramento
+## 📊 Monitoring
 
-### Verificar Posições
+### Check Positions
 ```bash
 # Via FreqTrade
 freqtrade status
@@ -153,39 +153,39 @@ curl -X GET "https://api.bybit.com/v5/position/list" \
   -H "X-BAPI-API-KEY: ${FREQTRADE_API_KEY}"
 ```
 
-### Logs Importantes
+### Important Logs
 ```bash
-# Monitorar funding fees
+# Monitor funding fees
 grep -i "funding" user_data/logs/freqtrade.log
 
-# Monitorar alavancagem
+# Monitor leverage
 grep -i "leverage" user_data/logs/freqtrade.log
 ```
 
-## 🔒 Segurança
+## 🔒 Security
 
 ### API Keys
-- ✅ Usar apenas permissões necessárias
-- ✅ Restringir por IP se possível
-- ✅ Rotacionar keys periodicamente
-- ❌ Nunca dar permissão de withdrawal
+- ✅ Use only necessary permissions
+- ✅ Restrict by IP if possible
+- ✅ Rotate keys periodically
+- ❌ Never give withdrawal permissions
 
-### Conta
-- ✅ Usar subaccount dedicada para bot
-- ✅ Manter apenas capital necessário
-- ✅ Monitorar regularmente
-- ❌ Misturar trading manual com bot
+### Account
+- ✅ Use dedicated subaccount for bot
+- ✅ Keep only necessary capital
+- ✅ Monitor regularly
+- ❌ Mix manual trading with bot
 
-## 📋 Checklist Final
+## 📋 Final Checklist
 
-- [ ] API Key criada com permissões corretas
+- [ ] API Key created with correct permissions
 - [ ] Position Mode = "One-way Mode"
-- [ ] Alavancagem configurada (10x)
-- [ ] Variáveis de ambiente configuradas
-- [ ] Teste dry-run funcionando
-- [ ] Monitoramento ativo
-- [ ] Capital limitado na conta
+- [ ] Leverage configured (10x)
+- [ ] Environment variables configured
+- [ ] Dry-run test working
+- [ ] Active monitoring
+- [ ] Limited capital in account
 
 ---
 
-**🎯 Pronto para trading com Bybit Perpetual Futures!**
+**🎯 Ready for trading with Bybit Perpetual Futures!**

@@ -1,16 +1,16 @@
 #!/bin/bash
-# Script de backup e monitoramento para FreqTrade
-# Uso: ./monitor.sh
+# Backup and monitoring script for FreqTrade
+# Usage: ./monitor.sh
 
 set -e
 
-# Configurações
+# Configuration
 USER_DATA_DIR="/home/marcos/projects/cryptotrader/user_data"
 PROJECT_DIR="/home/marcos/projects/cryptotrader"
 BACKUP_DIR="/home/marcos/projects/cryptotrader/backups"
 LOG_FILE="$USER_DATA_DIR/logs/freqtrade.log"
 
-# Cores
+# Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -33,56 +33,56 @@ info() {
     echo -e "${BLUE}[INFO] $1${NC}"
 }
 
-# Função para fazer backup
+# Function to backup data
 backup_data() {
-    log "Iniciando backup..."
+    log "Starting backup..."
     
-    # Criar diretório de backup se não existir
+    # Create backup directory if it doesn't exist
     mkdir -p "$BACKUP_DIR/$(date +'%Y-%m')"
     
     BACKUP_FILE="$BACKUP_DIR/$(date +'%Y-%m')/backup_$(date +'%Y%m%d_%H%M%S').tar.gz"
     
-    # Fazer backup dos dados importantes
+    # Backup important data
     tar -czf "$BACKUP_FILE" \
         -C "$USER_DATA_DIR" \
         --exclude="logs/*.log*" \
         --exclude="data/*.json" \
-        . 2>/dev/null || warning "Alguns arquivos podem não ter sido incluídos no backup"
+        . 2>/dev/null || warning "Some files may not have been included in the backup"
     
-    log "Backup criado: $BACKUP_FILE"
+    log "Backup created: $BACKUP_FILE"
     
-    # Limpar backups antigos (manter apenas últimos 30 dias)
+    # Clean old backups (keep only last 30 days)
     find "$BACKUP_DIR" -name "backup_*.tar.gz" -mtime +30 -delete 2>/dev/null || true
-    log "Backups antigos removidos"
+    log "Old backups removed"
 }
 
-# Função para mostrar status
+# Function to show status
 show_status() {
-    info "=== STATUS DO FREQTRADE ==="
+    info "=== FREQTRADE STATUS ==="
     
-    # Verificar se FreqTrade está rodando
+    # Check if FreqTrade is running
     if pgrep -f "freqtrade trade" > /dev/null; then
-        log "✅ FreqTrade está rodando"
+        log "✅ FreqTrade is running"
         
-        # Mostrar informações dos processos
-        info "Processos FreqTrade:"
+        # Show process information
+        info "FreqTrade processes:"
         pgrep -f "freqtrade trade" | xargs ps -p | tail -n +2
         
     else
-        warning "❌ FreqTrade não está rodando"
+        warning "❌ FreqTrade is not running"
     fi
     
     echo ""
     
-    # Verificar espaço em disco
-    info "=== ESPAÇO EM DISCO ==="
-    df -h "$USER_DATA_DIR" | tail -n 1 | awk '{print "Usado: " $3 " / " $2 " (" $5 ")"}'
+    # Check disk space
+    info "=== DISK SPACE ==="
+    df -h "$USER_DATA_DIR" | tail -n 1 | awk '{print "Used: " $3 " / " $2 " (" $5 ")"}'
     
     echo ""
     
-    # Verificar logs recentes
+    # Check recent logs
     if [ -f "$LOG_FILE" ]; then
-        info "=== ÚLTIMAS ENTRADAS DO LOG ==="
+        info "=== LATEST LOG ENTRIES ==="
         tail -n 10 "$LOG_FILE" | while read line; do
             if echo "$line" | grep -q "ERROR"; then
                 error "$line"
@@ -93,87 +93,87 @@ show_status() {
             fi
         done
     else
-        warning "Arquivo de log não encontrado: $LOG_FILE"
+        warning "Log file not found: $LOG_FILE"
     fi
     
     echo ""
     
-    # Verificar trades recentes (se database existir)
+    # Check recent trades (if database exists)
     DB_FILE="$USER_DATA_DIR/tradesv3.sqlite"
     if [ -f "$DB_FILE" ]; then
-        info "=== TRADES RECENTES ==="
-        # Usar FreqTrade para mostrar trades (requer ambiente ativo)
+        info "=== RECENT TRADES ==="
+        # Use FreqTrade to show trades (requires active environment)
         if command -v freqtrade &> /dev/null; then
-            freqtrade show_trades --db-url "sqlite:///$DB_FILE" --days 1 2>/dev/null | tail -n 10 || warning "Não foi possível acessar dados de trades"
+            freqtrade show_trades --db-url "sqlite:///$DB_FILE" --days 1 2>/dev/null | tail -n 10 || warning "Could not access trade data"
         else
-            warning "FreqTrade não está no PATH atual"
+            warning "FreqTrade is not in current PATH"
         fi
     fi
 }
 
-# Função para monitoramento contínuo
+# Function for continuous monitoring
 monitor_continuous() {
-    log "Iniciando monitoramento contínuo (Ctrl+C para parar)..."
+    log "Starting continuous monitoring (Ctrl+C to stop)..."
     
     while true; do
         clear
         show_status
         
-        info "Próxima atualização em 30 segundos..."
+        info "Next update in 30 seconds..."
         sleep 30
     done
 }
 
-# Função para limpeza de logs
+# Function for log cleanup
 cleanup_logs() {
-    log "Iniciando limpeza de logs..."
+    log "Starting log cleanup..."
     
-    # Compactar logs antigos
+    # Compress old logs
     find "$USER_DATA_DIR/logs" -name "*.log" -mtime +7 -exec gzip {} \;
     
-    # Remover logs muito antigos
+    # Remove very old logs
     find "$USER_DATA_DIR/logs" -name "*.log.gz" -mtime +30 -delete
     
-    log "Limpeza de logs concluída"
+    log "Log cleanup completed"
 }
 
-# Função para verificar performance
+# Function to check performance
 check_performance() {
-    info "=== ANÁLISE DE PERFORMANCE ==="
+    info "=== PERFORMANCE ANALYSIS ==="
     
     DB_FILE="$USER_DATA_DIR/tradesv3.sqlite"
     if [ -f "$DB_FILE" ] && command -v freqtrade &> /dev/null; then
         
-        # Performance dos últimos 7 dias
-        info "Performance últimos 7 dias:"
-        freqtrade show_trades --db-url "sqlite:///$DB_FILE" --days 7 2>/dev/null || warning "Erro ao acessar dados"
+        # Performance for last 7 days
+        info "Performance last 7 days:"
+        freqtrade show_trades --db-url "sqlite:///$DB_FILE" --days 7 2>/dev/null || warning "Error accessing data"
         
         echo ""
         
-        # Performance por par
-        info "Performance por par (últimos 30 dias):"
+        # Performance per pair
+        info "Performance per pair (last 30 days):"
         freqtrade show_trades --db-url "sqlite:///$DB_FILE" --days 30 --print-json 2>/dev/null | \
         jq -r '.[] | "\(.pair): \(.profit_ratio * 100 | round)%"' 2>/dev/null | \
-        sort | uniq -c | sort -nr || warning "jq não disponível para análise detalhada"
+        sort | uniq -c | sort -nr || warning "jq not available for detailed analysis"
         
     else
-        warning "Banco de dados de trades não encontrado ou FreqTrade não disponível"
+        warning "Trade database not found or FreqTrade not available"
     fi
 }
 
-# Menu principal
+# Main menu
 show_menu() {
     echo ""
-    info "=== MONITOR FREQTRADE ==="
-    echo "1) Mostrar status atual"
-    echo "2) Monitoramento contínuo"
-    echo "3) Fazer backup"
-    echo "4) Limpeza de logs"
-    echo "5) Análise de performance"
-    echo "6) Ver log em tempo real"
-    echo "0) Sair"
+    info "=== FREQTRADE MONITOR ==="
+    echo "1) Show current status"
+    echo "2) Continuous monitoring"
+    echo "3) Create backup"
+    echo "4) Log cleanup"
+    echo "5) Performance analysis"
+    echo "6) View real-time log"
+    echo "0) Exit"
     echo ""
-    read -p "Escolha uma opção: " choice
+    read -p "Choose an option: " choice
     
     case $choice in
         1)
@@ -193,32 +193,32 @@ show_menu() {
             ;;
         6)
             if [ -f "$LOG_FILE" ]; then
-                log "Monitorando log em tempo real (Ctrl+C para parar)..."
+                log "Monitoring real-time log (Ctrl+C to stop)..."
                 tail -f "$LOG_FILE"
             else
-                error "Log file não encontrado: $LOG_FILE"
+                error "Log file not found: $LOG_FILE"
             fi
             ;;
         0)
-            log "Saindo..."
+            log "Exiting..."
             exit 0
             ;;
         *)
-            warning "Opção inválida"
+            warning "Invalid option"
             ;;
     esac
 }
 
-# Verificar se argumentos foram passados
+# Check if arguments were passed
 if [ $# -eq 0 ]; then
-    # Modo interativo
+    # Interactive mode
     while true; do
         show_menu
         echo ""
-        read -p "Pressione Enter para continuar..."
+        read -p "Press Enter to continue..."
     done
 else
-    # Modo comando
+    # Command mode
     case $1 in
         status)
             show_status
@@ -239,11 +239,11 @@ else
             if [ -f "$LOG_FILE" ]; then
                 tail -f "$LOG_FILE"
             else
-                error "Log file não encontrado: $LOG_FILE"
+                error "Log file not found: $LOG_FILE"
             fi
             ;;
         *)
-            echo "Uso: $0 [status|monitor|backup|cleanup|performance|log]"
+            echo "Usage: $0 [status|monitor|backup|cleanup|performance|log]"
             exit 1
             ;;
     esac

@@ -33,8 +33,9 @@ cd cryptotrader
 
 ## 📊 Estratégias Disponíveis
 
-**Exchange Configurada**: Bybit Futures
+**Exchange Configurada**: Bybit Perpetual Futures (Swap)
 **Formato dos Pares**: `SYMBOL/USDT:USDT` (ex: `BTC/USDT:USDT`)
+**Modo de Trading**: Futuros com margem isolada
 
 ### 1. RSI + Bollinger Bands Strategy (`RSIBBStrategy`)
 

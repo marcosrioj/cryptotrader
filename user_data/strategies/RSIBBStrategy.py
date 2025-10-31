@@ -205,4 +205,4 @@ class RSIBBStrategy(IStrategy):
         """
         Customizar alavancagem por par - 10x para maximizar retornos
         """
-        return 10.0  # Alavancagem 10x
+        return 10.0  # Alavancagem 10x (configurar manualmente na Bybit)
